@@ -10,7 +10,7 @@ const client = new DOK({
   accessTokenSecret: process.env.ACCESS_TOKEN_SECRET || ''
 });
 
-describe('Test client', () => {
+describe('Test Task', () => {
   it('should get tasks', async () => {
     const { meta, tasks } = await client.tasks();
     expect(meta).toBeDefined();

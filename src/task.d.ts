@@ -1,7 +1,7 @@
 import { ContainerJson } from "./container";
 import { ArtifactJson } from "./artifact";
 import Task from "./task";
-
+import { DokMeta, DokMetaJson } from "./dok";
 export type TaskStatus = "waiting" | "running" | "error" | "done" | "aborted" | "canceled";
 export type TasksParams = {
   /** Page number to retrieve */
@@ -12,21 +12,6 @@ export type TasksParams = {
   status?: TaskStatus;
   /** Tag to filter by */
   tag?: string;
-}
-
-export type TasksMeta = {
-  /** Current page number */
-  page: number;
-  /** Number of items per page */
-  page_size: number;
-  /** Total number of pages */
-  total_pages: number;
-  /** Total number of items */
-  count: number;
-  /** URL of the next page */
-  next: string | null;
-  /** URL of the previous page */
-  previous: string | null;
 }
 
 export type TaskJson = {
@@ -56,14 +41,14 @@ export type TaskJson = {
 
 export type TasksJsonResponse = {
   /** Metadata about the tasks */
-  meta: TasksMeta;
+  meta: DokMetaJson;
   /** List of tasks */
   results: TaskJson[];
 }
 
 export type TasksResponse = {
   /** Metadata about the tasks */
-  meta: TasksMeta;
+  meta: DokMeta;
   /** List of tasks */
   tasks: Task[];
 }
