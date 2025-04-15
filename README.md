@@ -33,7 +33,7 @@ npm test
   - [ ] Delete container registry
   - [ ] Update container registry
 - Artifacts
-  - [ ] Get artifacts
+  - [x] Get artifacts
   - [ ] Get artifact
   - [ ] Get artifact download URL
 - Plan
@@ -41,6 +41,37 @@ npm test
 - Cost
   - [ ] Get costs
   - [ ] Get cost by plan
+
+## Sample Code
+
+### Initialize DOK client
+
+```ts
+import DOK from '@goofmint/dok-sdk';
+
+const dok = new DOK({
+  accessToken: process.env.ACCESS_TOKEN,
+  accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
+});
+```
+
+### Get tasks
+
+```ts
+const { tasks, meta } = await dok.tasks();
+```
+
+### Get task
+
+```ts
+const task = await dok.task(taskId);
+```
+
+### Get artifacts
+
+```ts
+const { artifacts, meta } = await dok.artifacts();
+```
 
 ## License
 
