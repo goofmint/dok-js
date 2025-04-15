@@ -1,4 +1,4 @@
-export type DokMetaJson= {
+export type DokMetaJson = {
   /** Current page number */
   page: number;
   /** Number of items per page */
@@ -13,7 +13,7 @@ export type DokMetaJson= {
   previous: string | null;
 }
 
-export type DokMeta= {
+export type DokMeta = {
   /** Current page number */
   page: number;
   /** Number of items per page */

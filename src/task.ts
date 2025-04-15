@@ -93,14 +93,15 @@ class Task extends Base {
     if (params.status) query.set("status", params.status);
     if (params.tag) query.set("tag", params.tag);
     const headers = Task.getHeaders();
-    const url = `${Task.client.baseUrl}/tasks/?${query.toString()}`;
+    const queryString = query.toString();
+    const url = `${Task.client.baseUrl}/tasks/${queryString ? `?${queryString}` : ''}`;
     const response = await fetch(url, {
       method: "GET",
       headers,
     });
     const data = await response.json() as TasksJsonResponse | ErrorResponse;
     if ("error_code" in data) {
-      throw new Error(`${data.error_code}: ${data.error_msg}`);
+      throw new Error(`${data.error_code}: ${data.error_msg} (Status: ${data.status}, Fatal: ${data.is_fatal})`);
     }
     const meta = Task.toMeta(data.meta);
     return {

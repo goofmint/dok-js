@@ -13,6 +13,11 @@ describe('Test Artifact', () => {
   it('should get artifacts', async () => {
     const { meta, artifacts } = await client.artifacts();
     expect(meta).toBeDefined();
+    expect(meta.totalPages).toBeGreaterThan(0);
+    expect(meta.page).toBeGreaterThan(0);
+    expect(meta.pageSize).toBeGreaterThan(0);
+    expect(meta.pageSize).toBeLessThanOrEqual(100);
+    expect(meta.count).toBeGreaterThan(0);
     expect(artifacts).toBeDefined();
     expect(artifacts.length).toBeGreaterThan(0);
     const artifact = artifacts[0];

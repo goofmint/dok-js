@@ -64,14 +64,15 @@ class Artifact extends Base {
     if (params.pageSize) query.set("page_size", params.pageSize.toString());
     if (params.task) query.set("task", params.task);
     const headers = Artifact.getHeaders();
-    const url = `${Artifact.client.baseUrl}/artifacts/?${query.toString()}`;
+    const queryString = query.toString();
+    const url = `${Artifact.client.baseUrl}/artifacts/${queryString ? `?${queryString}` : ''}`;
     const response = await fetch(url, {
       method: "GET",
       headers,
     });
     const data = await response.json() as ArtifactsJsonResponse | ErrorResponse;
     if ("error_code" in data) {
-      throw new Error(`${data.error_code}: ${data.error_msg}`);
+      throw new Error(`${data.error_code}: ${data.error_msg} (Status: ${data.status}, Fatal: ${data.is_fatal})`);
     }
     const meta = Artifact.toMeta(data.meta);
     return {
