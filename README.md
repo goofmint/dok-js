@@ -2,6 +2,8 @@
 
 SDK for [DOK](https://www.sakura.ad.jp/koukaryoku-dok/) that is container GPU cloud service.
 
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/goofmint/dok-js?utm_source=oss&utm_medium=github&utm_campaign=goofmint%2Fdok-js&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+
 ## Usage
 
 ```bash

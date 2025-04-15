@@ -8,7 +8,7 @@ class Artifact extends Base {
   deletedAt: Date | null = null;
   filename: string | null = null;
   sizeBytes: number | null = null;
-
+  updatedAt: Date | null = null;
   constructor(readonly json: ArtifactJson | null) {
     super();
     if (json) {
@@ -54,6 +54,13 @@ class Artifact extends Base {
           this.sizeBytes = value;
         }
         break;
+      case "updated_at":
+        if (typeof value === "string") {
+          this.updatedAt = new Date(value);
+        }
+        break;
+      default:
+        throw new Error(`Unknown key in artifact: ${key}`);
     }
   }
 }

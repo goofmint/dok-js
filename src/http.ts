@@ -30,6 +30,8 @@ class Http extends Base {
           this.path = value;
         }
         break;
+      default:
+        throw new Error(`Unknown key in http: ${key}`);
     }
   }
 }

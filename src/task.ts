@@ -1,53 +1,17 @@
 import Base from "./base";
-import Artifact, { ArtifactJson } from "./artifact";
-import Container, { ContainerJson } from "./container";
+import Artifact from "./artifact";
+import Container from "./container";
 import { ErrorResponse } from "./index.d";
-type TaskStatus = "waiting" | "running" | "error" | "done" | "aborted" | "canceled";
-type TasksParams = {
-  page?: number;
-  pageSize?: number;
-  status?: TaskStatus;
-  tag?: string;
-}
-
-type TasksMeta = {
-  page: number;
-  page_size: number;
-  total_pages: number;
-  count: number;
-  next: string;
-  previous: string;
-}
-
-type TaskJson = {
-  id: string
-  created_at: string
-  updated_at: string
-  canceled_at: string
-  containers: ContainerJson[]
-  status: string
-  tags: string[]
-  error_message: string
-  artifact: ArtifactJson
-}
-
-type TasksJsonResponse = {
-  meta: TasksMeta;
-  results: TaskJson[];
-}
-
-type TasksResponse = {
-  meta: TasksMeta;
-  tasks: Task[];
-}
-
+import { TaskJson, TasksParams, TasksMeta, TasksResponse, TasksJsonResponse } from "./task.d";
 class Task extends Base {
   id: string | null = null;
+  name: string | null = null;
   createdAt: Date | null = null;
   updatedAt: Date | null = null;
   canceledAt: Date | null = null;
   containers: Container[] = [];
   status: string | null = null;
+  httpUri: string | null = null;
   tags: string[] = [];
   errorMessage: string | null = null;
   artifact: Artifact | null = null;
@@ -70,6 +34,11 @@ class Task extends Base {
       case "id":
         if (typeof value === "string") {
           this.id = value;
+        }
+        break;
+      case "name":
+        if (typeof value === "string") {
+          this.name = value;
         }
         break;
       case "created_at":
@@ -97,6 +66,11 @@ class Task extends Base {
           this.status = value;
         }
         break;
+      case "http_uri":
+        if (typeof value === "string") {
+          this.httpUri = value;
+        }
+        break;
       case "tags":
         if (Array.isArray(value)) {
           this.tags = value;
@@ -112,6 +86,8 @@ class Task extends Base {
           this.artifact = new Artifact(value);
         }
         break;
+      default:
+        throw new Error(`Unknown key in task: ${key}`);
     }
   }
 
@@ -137,6 +113,17 @@ class Task extends Base {
       meta: data.meta,
       tasks: data.results.map(result => new Task(result)),
     };
+  }
+
+  static async find(id: string): Promise<Task> {
+    const headers = Task.getHeaders();
+    const url = `${Task.client.baseUrl}/tasks/${id}/`;
+    const response = await fetch(url, { method: "GET", headers });
+    const data = await response.json() as TaskJson | ErrorResponse;
+    if ("error_code" in data) {
+      throw new Error(`${data.error_code}: ${data.error_msg}`);
+    }
+    return new Task(data);
   }
 }
 
