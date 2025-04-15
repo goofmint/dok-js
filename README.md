@@ -20,7 +20,7 @@ npm test
 
 - Tasks
   - [x] Get tasks
-  - [ ] Get task
+  - [x] Get task
   - [ ] Create task
   - [ ] Delete task
   - [ ] Cancel task
