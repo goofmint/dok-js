@@ -82,21 +82,33 @@ class Container extends Base {
           this.executionSeconds = value;
         }
         break;
-      case "start_at":
-        if (typeof value === "string") {
-          this.startAt = new Date(value);
+      case "start_at": {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          this.startAt = date;
+        } else {
+          throw new Error(`Invalid date format for start_at: ${value}`);
         }
         break;
-      case "end_at":
-        if (typeof value === "string") {
-          this.endAt = new Date(value);
+      }
+      case "end_at": {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          this.endAt = date;
+        } else {
+          throw new Error(`Invalid date format for end_at: ${value}`);
         }
         break;
-      case "stop_at":
-        if (typeof value === "string") {
-          this.stopAt = new Date(value);
+      }
+      case "stop_at": {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          this.stopAt = date;
+        } else {
+          throw new Error(`Invalid date format for stop_at: ${value}`);
         }
         break;
+      }
       default:
         throw new Error(`Unknown key in container: ${key}`);
     }

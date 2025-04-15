@@ -41,21 +41,33 @@ class Task extends Base {
           this.name = value;
         }
         break;
-      case "created_at":
-        if (typeof value === "string") {
-          this.createdAt = new Date(value);
+      case "created_at": {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          this.createdAt = date;
+        } else {
+          throw new Error(`Invalid date format for created_at: ${value}`);
         }
         break;
-      case "updated_at":
-        if (typeof value === "string") {
-          this.updatedAt = new Date(value);
+      }
+      case "updated_at": {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          this.updatedAt = date;
+        } else {
+          throw new Error(`Invalid date format for updated_at: ${value}`);
         }
         break;
-      case "canceled_at":
-        if (typeof value === "string") {
-          this.canceledAt = new Date(value);
+      }
+      case "canceled_at": {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          this.canceledAt = date;
+        } else {
+          throw new Error(`Invalid date format for canceled_at: ${value}`);
         }
         break;
+      }
       case "containers":
         if (Array.isArray(value)) {
           this.containers = value.map(container => new Container(container));
@@ -118,12 +130,22 @@ class Task extends Base {
   static async find(id: string): Promise<Task> {
     const headers = Task.getHeaders();
     const url = `${Task.client.baseUrl}/tasks/${id}/`;
-    const response = await fetch(url, { method: "GET", headers });
-    const data = await response.json() as TaskJson | ErrorResponse;
-    if ("error_code" in data) {
-      throw new Error(`${data.error_code}: ${data.error_msg}`);
+    try {
+      const response = await fetch(url, { method: "GET", headers });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json() as TaskJson | ErrorResponse;
+      if ("error_code" in data) {
+        throw new Error(`${data.error_code}: ${data.error_msg}`);
+      }
+      return new Task(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(`Failed to fetch task: ${error}`);
     }
-    return new Task(data);
   }
 }
 

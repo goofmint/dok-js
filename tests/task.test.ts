@@ -40,4 +40,10 @@ describe('Test client', () => {
     expect(task2.errorMessage).toEqual(task.errorMessage);
     expect(task2.artifact).toBeInstanceOf(Artifact);
   });
+
+  it('should handle non-existent task ID', async () => {
+    // Use a clearly invalid ID format or one that's unlikely to exist
+    const nonExistentId = 'non-existent-task-id';
+    await expect(client.task(nonExistentId)).rejects.toThrow();
+  });
 }); 
