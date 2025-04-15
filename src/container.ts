@@ -13,8 +13,9 @@ class Container extends Base {
   plan: string | null = null;
   exitCode: number | null = null;
   executionSeconds: number | null = null;
-  startAt: string | null = null;
-  endAt: string | null = null;
+  startAt: Date | null = null;
+  endAt: Date | null = null;
+  stopAt: Date | null = null;
 
   constructor(readonly json: ContainerJson | null) {
     super();
@@ -82,15 +83,16 @@ class Container extends Base {
         }
         break;
       case "start_at":
-        if (typeof value === "string") {
-          this.startAt = value;
-        }
+        this.startAt = this.validateDate(value, key);
         break;
       case "end_at":
-        if (typeof value === "string") {
-          this.endAt = value;
-        }
+        this.endAt = this.validateDate(value, key);
         break;
+      case "stop_at":
+        this.stopAt = this.validateDate(value, key);
+        break;
+      default:
+        throw new Error(`Unknown key in container: ${key}`);
     }
   }
 }

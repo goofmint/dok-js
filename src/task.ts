@@ -1,53 +1,17 @@
 import Base from "./base";
-import Artifact, { ArtifactJson } from "./artifact";
-import Container, { ContainerJson } from "./container";
+import Artifact from "./artifact";
+import Container from "./container";
 import { ErrorResponse } from "./index.d";
-type TaskStatus = "waiting" | "running" | "error" | "done" | "aborted" | "canceled";
-type TasksParams = {
-  page?: number;
-  pageSize?: number;
-  status?: TaskStatus;
-  tag?: string;
-}
-
-type TasksMeta = {
-  page: number;
-  page_size: number;
-  total_pages: number;
-  count: number;
-  next: string;
-  previous: string;
-}
-
-type TaskJson = {
-  id: string
-  created_at: string
-  updated_at: string
-  canceled_at: string
-  containers: ContainerJson[]
-  status: string
-  tags: string[]
-  error_message: string
-  artifact: ArtifactJson
-}
-
-type TasksJsonResponse = {
-  meta: TasksMeta;
-  results: TaskJson[];
-}
-
-type TasksResponse = {
-  meta: TasksMeta;
-  tasks: Task[];
-}
-
+import { TaskJson, TasksParams, TasksMeta, TasksResponse, TasksJsonResponse } from "./task.d";
 class Task extends Base {
   id: string | null = null;
+  name: string | null = null;
   createdAt: Date | null = null;
   updatedAt: Date | null = null;
   canceledAt: Date | null = null;
   containers: Container[] = [];
   status: string | null = null;
+  httpUri: string | null = null;
   tags: string[] = [];
   errorMessage: string | null = null;
   artifact: Artifact | null = null;
@@ -72,20 +36,19 @@ class Task extends Base {
           this.id = value;
         }
         break;
-      case "created_at":
+      case "name":
         if (typeof value === "string") {
-          this.createdAt = new Date(value);
+          this.name = value;
         }
+        break;
+      case "created_at":
+        this.createdAt = this.validateDate(value, key);
         break;
       case "updated_at":
-        if (typeof value === "string") {
-          this.updatedAt = new Date(value);
-        }
+        this.updatedAt = this.validateDate(value, key);
         break;
       case "canceled_at":
-        if (typeof value === "string") {
-          this.canceledAt = new Date(value);
-        }
+        this.canceledAt = this.validateDate(value, key);
         break;
       case "containers":
         if (Array.isArray(value)) {
@@ -95,6 +58,11 @@ class Task extends Base {
       case "status":
         if (typeof value === "string") {
           this.status = value;
+        }
+        break;
+      case "http_uri":
+        if (typeof value === "string") {
+          this.httpUri = value;
         }
         break;
       case "tags":
@@ -112,6 +80,8 @@ class Task extends Base {
           this.artifact = new Artifact(value);
         }
         break;
+      default:
+        throw new Error(`Unknown key in task: ${key}`);
     }
   }
 
@@ -137,6 +107,27 @@ class Task extends Base {
       meta: data.meta,
       tasks: data.results.map(result => new Task(result)),
     };
+  }
+
+  static async find(id: string): Promise<Task> {
+    const headers = Task.getHeaders();
+    const url = `${Task.client.baseUrl}/tasks/${id}/`;
+    try {
+      const response = await fetch(url, { method: "GET", headers });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json() as TaskJson | ErrorResponse;
+      if ("error_code" in data) {
+        throw new Error(`${data.error_code}: ${data.error_msg}`);
+      }
+      return new Task(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(`Failed to fetch task: ${error}`);
+    }
   }
 }
 

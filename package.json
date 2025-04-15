@@ -1,6 +1,6 @@
 {
   "name": "@goofmint/dok-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Dok SDK",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,6 +12,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/goofmint/dok-js.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [],
   "author": "goofmint",

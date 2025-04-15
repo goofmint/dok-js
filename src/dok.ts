@@ -15,6 +15,10 @@ class DOK {
   async tasks(params: TasksParams = {}): Promise<TasksResponse> {
     return await Task.all(params);
   }
+
+  async task(id: string): Promise<Task> {
+    return await Task.find(id);
+  }
 }
 
 export default DOK;

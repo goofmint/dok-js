@@ -8,7 +8,7 @@ class Artifact extends Base {
   deletedAt: Date | null = null;
   filename: string | null = null;
   sizeBytes: number | null = null;
-
+  updatedAt: Date | null = null;
   constructor(readonly json: ArtifactJson | null) {
     super();
     if (json) {
@@ -35,14 +35,10 @@ class Artifact extends Base {
         }
         break;
       case "created_at":
-        if (typeof value === "string") {
-          this.createdAt = new Date(value);
-        }
+        this.createdAt = this.validateDate(value, key);
         break;
       case "deleted_at":
-        if (typeof value === "string") {
-          this.deletedAt = new Date(value);
-        }
+        this.deletedAt = this.validateDate(value, key);
         break;
       case "filename":
         if (typeof value === "string") {
@@ -54,6 +50,11 @@ class Artifact extends Base {
           this.sizeBytes = value;
         }
         break;
+      case "updated_at":
+        this.updatedAt = this.validateDate(value, key);
+        break;
+      default:
+        throw new Error(`Unknown key in artifact: ${key}`);
     }
   }
 }
