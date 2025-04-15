@@ -11,6 +11,15 @@ class Base {
     headers.set("Content-Type", "application/json");
     return headers;
   }
+
+  validateDate(value: any, fieldName: string): Date {
+    const date = new Date(value);
+    if (!isNaN(date.getTime())) {
+      return date;
+    } else {
+      throw new Error(`Invalid date format for ${fieldName}: ${value}`);
+    }
+  }
 }
 
 export default Base;

@@ -41,33 +41,15 @@ class Task extends Base {
           this.name = value;
         }
         break;
-      case "created_at": {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          this.createdAt = date;
-        } else {
-          throw new Error(`Invalid date format for created_at: ${value}`);
-        }
+      case "created_at":
+        this.createdAt = this.validateDate(value, key);
         break;
-      }
-      case "updated_at": {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          this.updatedAt = date;
-        } else {
-          throw new Error(`Invalid date format for updated_at: ${value}`);
-        }
+      case "updated_at":
+        this.updatedAt = this.validateDate(value, key);
         break;
-      }
-      case "canceled_at": {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          this.canceledAt = date;
-        } else {
-          throw new Error(`Invalid date format for canceled_at: ${value}`);
-        }
+      case "canceled_at":
+        this.canceledAt = this.validateDate(value, key);
         break;
-      }
       case "containers":
         if (Array.isArray(value)) {
           this.containers = value.map(container => new Container(container));

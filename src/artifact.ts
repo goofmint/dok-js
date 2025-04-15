@@ -34,24 +34,12 @@ class Artifact extends Base {
           this.task = value;
         }
         break;
-      case "created_at": {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          this.createdAt = date;
-        } else {
-          throw new Error(`Invalid date format for created_at: ${value}`);
-        }
+      case "created_at":
+        this.createdAt = this.validateDate(value, key);
         break;
-      }
-      case "deleted_at": {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          this.deletedAt = date;
-        } else {
-          throw new Error(`Invalid date format for deleted_at: ${value}`);
-        }
+      case "deleted_at":
+        this.deletedAt = this.validateDate(value, key);
         break;
-      }
       case "filename":
         if (typeof value === "string") {
           this.filename = value;
@@ -62,15 +50,9 @@ class Artifact extends Base {
           this.sizeBytes = value;
         }
         break;
-      case "updated_at": {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          this.updatedAt = date;
-        } else {
-          throw new Error(`Invalid date format for updated_at: ${value}`);
-        }
+      case "updated_at":
+        this.updatedAt = this.validateDate(value, key);
         break;
-      }
       default:
         throw new Error(`Unknown key in artifact: ${key}`);
     }
