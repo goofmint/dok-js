@@ -10,10 +10,16 @@ const client = new DOK({
   accessTokenSecret: process.env.ACCESS_TOKEN_SECRET || ''
 });
 
-describe('Test client', () => {
+describe('Test Task', () => {
   it('should get tasks', async () => {
     const { meta, tasks } = await client.tasks();
     expect(meta).toBeDefined();
+    expect(meta).toBeDefined();
+    expect(meta.totalPages).toBeGreaterThan(0);
+    expect(meta.page).toBeGreaterThan(0);
+    expect(meta.pageSize).toBeGreaterThan(0);
+    expect(meta.pageSize).toBeLessThanOrEqual(100);
+    expect(meta.count).toBeGreaterThan(0);
     expect(tasks).toBeDefined();
     expect(tasks.length).toBeGreaterThan(0);
     const task = tasks[0];

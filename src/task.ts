@@ -2,7 +2,8 @@ import Base from "./base";
 import Artifact from "./artifact";
 import Container from "./container";
 import { ErrorResponse } from "./index.d";
-import { TaskJson, TasksParams, TasksMeta, TasksResponse, TasksJsonResponse } from "./task.d";
+import { TaskJson, TasksParams, TasksResponse, TasksJsonResponse } from "./task.d";
+import { DokMeta, DokMetaJson } from "./dok.d";
 class Task extends Base {
   id: string | null = null;
   name: string | null = null;
@@ -91,20 +92,20 @@ class Task extends Base {
     if (params.pageSize) query.set("page_size", params.pageSize.toString());
     if (params.status) query.set("status", params.status);
     if (params.tag) query.set("tag", params.tag);
-    const headers = new Headers();
-    headers.set("Authorization", `Basic ${btoa(`${Task.client.accessToken}:${Task.client.accessTokenSecret}`)}`);
-    headers.set("Content-Type", "application/json");
-    const url = `${Task.client.baseUrl}/tasks/?${query.toString()}`;
+    const headers = Task.getHeaders();
+    const queryString = query.toString();
+    const url = `${Task.client.baseUrl}/tasks/${queryString ? `?${queryString}` : ''}`;
     const response = await fetch(url, {
       method: "GET",
       headers,
     });
     const data = await response.json() as TasksJsonResponse | ErrorResponse;
     if ("error_code" in data) {
-      throw new Error(`${data.error_code}: ${data.error_msg}`);
+      throw new Error(`${data.error_code}: ${data.error_msg} (Status: ${data.status}, Fatal: ${data.is_fatal})`);
     }
+    const meta = Task.toMeta(data.meta);
     return {
-      meta: data.meta,
+      meta,
       tasks: data.results.map(result => new Task(result)),
     };
   }
@@ -132,4 +133,4 @@ class Task extends Base {
 }
 
 export default Task;
-export { TasksParams, TasksMeta, TaskJson, TasksResponse, TasksJsonResponse };
+export { TasksParams, TaskJson, TasksResponse, TasksJsonResponse };

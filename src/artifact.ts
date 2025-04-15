@@ -1,6 +1,6 @@
 import Base from "./base";
-import { ArtifactJson } from "./artifact.d";
-
+import { ArtifactJson, ArtifactsParams, ArtifactsJsonResponse, ArtifactsResponse } from "./artifact.d";
+import { ErrorResponse } from "./index.d";
 class Artifact extends Base {
   id: string | null = null;
   task: string | null = null;
@@ -9,7 +9,7 @@ class Artifact extends Base {
   filename: string | null = null;
   sizeBytes: number | null = null;
   updatedAt: Date | null = null;
-  constructor(readonly json: ArtifactJson | null) {
+  constructor(json: ArtifactJson | null) {
     super();
     if (json) {
       this.sets(json);
@@ -57,7 +57,30 @@ class Artifact extends Base {
         throw new Error(`Unknown key in artifact: ${key}`);
     }
   }
+
+  static async all(params: ArtifactsParams): Promise<ArtifactsResponse> {
+    const query = new URLSearchParams();
+    if (params.page) query.set("page", params.page.toString());
+    if (params.pageSize) query.set("page_size", params.pageSize.toString());
+    if (params.task) query.set("task", params.task);
+    const headers = Artifact.getHeaders();
+    const queryString = query.toString();
+    const url = `${Artifact.client.baseUrl}/artifacts/${queryString ? `?${queryString}` : ''}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers,
+    });
+    const data = await response.json() as ArtifactsJsonResponse | ErrorResponse;
+    if ("error_code" in data) {
+      throw new Error(`${data.error_code}: ${data.error_msg} (Status: ${data.status}, Fatal: ${data.is_fatal})`);
+    }
+    const meta = Artifact.toMeta(data.meta);
+    return {
+      meta,
+      artifacts: data.results.map(result => new Artifact(result)),
+    };
+  }
 }
 
 export default Artifact;
-export { ArtifactJson };
+export { ArtifactJson, ArtifactsParams, ArtifactsJsonResponse, ArtifactsResponse };
