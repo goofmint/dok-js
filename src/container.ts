@@ -104,7 +104,7 @@ class Container extends Base {
       command: this.command,
       entrypoint: this.entrypoint,
       environment: this.environment || {},
-      http: this.http?.toJson() ?? null,
+      http: this.http?.toJson(),
       plan: this.plan,
     };
     if (this.registry) params.registry = this.registry;

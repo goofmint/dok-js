@@ -14,7 +14,7 @@ export interface ContainerJson {
   /** Environment of the container */
   environment: {[key: string]: string}
   /** HTTP configuration */
-  http: HttpJson | null
+  http?: HttpJson
   /** Plan of the container */
   plan?: string
   /** Exit code of the container */
