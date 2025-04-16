@@ -115,14 +115,16 @@ describe('Test Task', () => {
         TEXT: '皆さん、こんにちは。今日はハンズオンを実施中です。',
       });
     task.containers = [container];
-    await task.save();
+
+    const saveResult = await task.save();
+    expect(saveResult).toBe(true);
     expect(task.id).toBeDefined();
     expect(task.createdAt).toBeDefined();
     expect(task.status).toEqual('waiting');
-    const bol2 = await task.cancel();
-    expect(bol2).toBe(true);
+    const cancelResult = await task.cancel();
+    expect(cancelResult).toBe(true);
     expect(task.status).toEqual('canceled');
-    const bol = await task.delete();
-    expect(bol).toBe(true);
+    const deleteResult = await task.delete();
+    expect(deleteResult).toBe(true);
   });
 }); 
