@@ -98,7 +98,7 @@ class Container extends Base {
   }
 
   toJson(): ContainerJson {
-    if (!this.image || !this.plan) throw new Error('Image, registry, and plan are required.');
+    if (!this.image || !this.plan) throw new Error('Image and plan are required.');
     const params: ContainerJson = {
       image: this.image,
       command: this.command,
