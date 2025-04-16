@@ -157,6 +157,7 @@ class Task extends Base {
   }
 
   async cancel(): Promise<boolean> {
+    if (!this.id) throw new Error('Task ID is required.');
     const response = await fetch(`${Task.client.baseUrl}/tasks/${this.id}/cancel/`, {
       method: "POST",
       headers: Task.getHeaders(),

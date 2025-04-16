@@ -67,6 +67,32 @@ const { tasks, meta } = await dok.tasks();
 const task = await dok.task(taskId);
 ```
 
+### Create task
+
+```ts
+const task = await dok.task();
+task
+  .set('name', 'test-task')
+  .set('tags', ['test', 'task']);
+const container = await client.container();
+container
+  .set('image', 'dok-handson.sakuracr.jp/openvoice')
+  .set('plan', 'v100-32gb')
+  .set('environment', {
+    LANG: 'JP',
+    REFERENCE: 'https://s3.isk01.sakurastorage.jp/mg-sd-demo/atsushi.mp3',
+    TEXT: '皆さん、こんにちは。今日はハンズオンを実施中です。',
+  });
+task.containers = [container];
+await task.save();
+```
+
+### Cancel task
+
+```ts
+await task.cancel();
+```
+
 ### Get artifacts
 
 ```ts
