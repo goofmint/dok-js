@@ -2,8 +2,7 @@ import Base from "./base";
 import Artifact from "./artifact";
 import Container from "./container";
 import { ErrorResponse } from "./index.d";
-import { TaskJson, TasksParams, TasksResponse, TasksJsonResponse } from "./task.d";
-import { DokMeta, DokMetaJson } from "./dok.d";
+import { TaskJson, TasksParams, TasksResponse, TasksJsonResponse, TaskCreateParams } from "./task.d";
 class Task extends Base {
   id: string | null = null;
   name: string | null = null;
@@ -17,20 +16,21 @@ class Task extends Base {
   errorMessage: string | null = null;
   artifact: Artifact | null = null;
 
-  constructor(json: TaskJson | null) {
+  constructor(json?: TaskJson) {
     super();
     if (json) {
       this.sets(json);
     }
   }
 
-  sets(json: TaskJson) {
+  sets(json: TaskJson): Task {
     Object.entries(json).forEach(([key, value]) => {
       this.set(key, value);
     });
+    return this;
   }
 
-  set(key: string, value: any) {
+  set(key: string, value: any): Task {
     switch (key) {
       case "id":
         if (typeof value === "string") {
@@ -53,7 +53,9 @@ class Task extends Base {
         break;
       case "containers":
         if (Array.isArray(value)) {
-          this.containers = value.map(container => new Container(container));
+          this.containers = value.map(container => 
+            container instanceof Container ? container : new Container(container)
+          );
         }
         break;
       case "status":
@@ -78,12 +80,13 @@ class Task extends Base {
         break;
       case "artifact":
         if (typeof value === "object") {
-          this.artifact = new Artifact(value);
+          this.artifact = value instanceof Artifact ? value : new Artifact(value);
         }
         break;
       default:
         throw new Error(`Unknown key in task: ${key}`);
     }
+    return this;
   }
 
   static async all(params: TasksParams): Promise<TasksResponse> {
@@ -129,6 +132,45 @@ class Task extends Base {
       }
       throw new Error(`Failed to fetch task: ${error}`);
     }
+  }
+  async save(): Promise<boolean> {
+    if (!this.name) throw new Error('Task name is required.');
+    const params: TaskCreateParams = {
+      name: this.name,
+      tags: this.tags,
+      containers: this.containers.map(container => container.toJson()),
+    };
+    const response = await fetch(`${Task.client.baseUrl}/tasks/`, {
+      method: "POST",
+      headers: Task.getHeaders(),
+      body: JSON.stringify(params),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}, ${JSON.stringify(await response.json())}`);
+    }
+    const data = await response.json() as TaskJson | ErrorResponse;
+    if ("error_code" in data) {
+      throw new Error(`${data.error_code}: ${data.error_msg}`);
+    }
+    this.sets(data);
+    return true;
+  }
+
+  async cancel(): Promise<boolean> {
+    if (!this.id) throw new Error('Task ID is required.');
+    const response = await fetch(`${Task.client.baseUrl}/tasks/${this.id}/cancel/`, {
+      method: "POST",
+      headers: Task.getHeaders(),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}, ${JSON.stringify(await response.json())}`);
+    }
+    const data = await response.json() as TaskJson | ErrorResponse;
+    if ("error_code" in data) {
+      throw new Error(`${data.error_code}: ${data.error_msg}`);
+    }
+    this.sets(data);
+    return true;
   }
 }
 

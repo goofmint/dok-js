@@ -27,3 +27,5 @@ export type DokMeta = {
   /** URL of the previous page */
   previous: string | null;
 }
+
+export type DokPaln = "v100-32gb" | "h100-80gb" | "h100-2g.20gb"
