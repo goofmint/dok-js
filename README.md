@@ -21,9 +21,9 @@ npm test
 - Tasks
   - [x] Get tasks
   - [x] Get task
-  - [ ] Create task
-  - [ ] Delete task
-  - [ ] Cancel task
+  - [x] Create task
+  - [x] Delete task
+  - [x] Cancel task
   - [ ] Get download URL
   - [ ] Get log stream websocket URL
 - Container Registry
@@ -91,6 +91,12 @@ await task.save();
 
 ```ts
 await task.cancel();
+```
+
+### Delete task
+
+```ts
+await task.delete();
 ```
 
 ### Get artifacts
