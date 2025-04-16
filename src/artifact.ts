@@ -9,20 +9,21 @@ class Artifact extends Base {
   filename: string | null = null;
   sizeBytes: number | null = null;
   updatedAt: Date | null = null;
-  constructor(json: ArtifactJson | null) {
+  constructor(json?: ArtifactJson) {
     super();
     if (json) {
       this.sets(json);
     }
   }
 
-  sets(json: ArtifactJson) {
+  sets(json: ArtifactJson): Artifact {
     Object.entries(json).forEach(([key, value]) => {
       this.set(key, value);
     });
+    return this;
   }
 
-  set(key: string, value: any) {
+  set(key: string, value: any): Artifact {
     switch (key) {
       case "id":
         if (typeof value === "string") {
@@ -56,6 +57,7 @@ class Artifact extends Base {
       default:
         throw new Error(`Unknown key in artifact: ${key}`);
     }
+    return this;
   }
 
   static async all(params: ArtifactsParams): Promise<ArtifactsResponse> {

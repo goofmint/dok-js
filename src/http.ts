@@ -5,7 +5,7 @@ class Http extends Base {
   port: number | null = null;
   path: string | null = null;
 
-  constructor(readonly json: HttpJson | null) {
+  constructor(json?: HttpJson) {
     super();
     if (json) {
       this.sets(json);
@@ -32,6 +32,14 @@ class Http extends Base {
         break;
       default:
         throw new Error(`Unknown key in http: ${key}`);
+    }
+  }
+
+  toJson(): HttpJson {
+    if (!this.port || !this.path) throw new Error('Port and path are required.');
+    return {
+      port: this.port,
+      path: this.path,
     }
   }
 }

@@ -52,3 +52,12 @@ export type TasksResponse = {
   /** List of tasks */
   tasks: Task[];
 }
+
+export type TaskCreateParams = {
+  /** Task name */
+  name: string;
+  /** Container info */
+  containers: ContainerJson[];
+  /** List of tags */
+  tags: string[];
+}

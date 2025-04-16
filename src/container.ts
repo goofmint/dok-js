@@ -1,36 +1,38 @@
 import Base from "./base";
 import { ContainerJson } from "./container.d";
 import Http, { HttpJson } from "./http";
+import { DokPaln } from "./dok.d";
 
 class Container extends Base {
   index: number | null = null;
   image: string | null = null;
   registry: string | null = null;
-  command: string[] | null = null;
-  entrypoint: string[] | null = null;
+  command: string[] = [];
+  entrypoint: string[] = [];
   environment: {[key: string]: string} = {};
   http: Http | null = null;
-  plan: string | null = null;
+  plan: DokPaln | null = null;
   exitCode: number | null = null;
   executionSeconds: number | null = null;
   startAt: Date | null = null;
   endAt: Date | null = null;
   stopAt: Date | null = null;
 
-  constructor(readonly json: ContainerJson | null) {
+  constructor(json?: ContainerJson) {
     super();
     if (json) {
       this.sets(json);
     }
   }
 
-  sets(json: ContainerJson) {
+  sets(json: ContainerJson): Container {
     Object.entries(json).forEach(([key, value]) => {
       this.set(key, value);
     });
+    return this;
   }
 
-  set(key: string, value: any) {
+  set(key: string, value: any): Container {
     switch (key) {
       case "index":
         if (typeof value === "number") {
@@ -63,13 +65,11 @@ class Container extends Base {
         }
         break;
       case "http":
-        if (typeof value === "object") {
-          this.http = new Http(value as HttpJson);
-        }
+        this.http = value instanceof Http ? value : new Http(value as HttpJson);
         break;
       case "plan":
         if (typeof value === "string") {
-          this.plan = value;
+          this.plan = value as DokPaln;
         }
         break;
       case "exit_code":
@@ -94,6 +94,21 @@ class Container extends Base {
       default:
         throw new Error(`Unknown key in container: ${key}`);
     }
+    return this;
+  }
+
+  toJson(): ContainerJson {
+    if (!this.image || !this.plan) throw new Error('Image, registry, and plan are required.');
+    const params: ContainerJson = {
+      image: this.image,
+      command: this.command,
+      entrypoint: this.entrypoint,
+      environment: this.environment || {},
+      http: this.http?.toJson() ?? null,
+      plan: this.plan,
+    };
+    if (this.registry) params.registry = this.registry;
+    return params;
   }
 }
 
