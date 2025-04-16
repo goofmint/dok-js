@@ -102,6 +102,9 @@ class Task extends Base {
       method: "GET",
       headers,
     });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}, ${await response.text()}`);
+    }
     const data = await response.json() as TasksJsonResponse | ErrorResponse;
     if ("error_code" in data) {
       throw new Error(`${data.error_code}: ${data.error_msg} (Status: ${data.status}, Fatal: ${data.is_fatal})`);
@@ -119,7 +122,7 @@ class Task extends Base {
     try {
       const response = await fetch(url, { method: "GET", headers });
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response.status}, ${await response.text()}`);
       }
       const data = await response.json() as TaskJson | ErrorResponse;
       if ("error_code" in data) {
@@ -146,7 +149,7 @@ class Task extends Base {
       body: JSON.stringify(params),
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}, ${JSON.stringify(await response.json())}`);
+      throw new Error(`HTTP error! Status: ${response.status}, ${await response.text()}`);
     }
     const data = await response.json() as TaskJson | ErrorResponse;
     if ("error_code" in data) {
@@ -163,13 +166,25 @@ class Task extends Base {
       headers: Task.getHeaders(),
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}, ${JSON.stringify(await response.json())}`);
+      throw new Error(`HTTP error! Status: ${response.status}, ${await response.text()}`);
     }
     const data = await response.json() as TaskJson | ErrorResponse;
     if ("error_code" in data) {
       throw new Error(`${data.error_code}: ${data.error_msg}`);
     }
     this.sets(data);
+    return true;
+  }
+
+  async delete(): Promise<boolean> {
+    if (!this.id) throw new Error('Task ID is required.');
+    const response = await fetch(`${Task.client.baseUrl}/tasks/${this.id}/`, {
+      method: "DELETE",
+      headers: Task.getHeaders(),
+    });
+    if (response.status !== 204) {
+      throw new Error(`HTTP error! Status: ${response.status}, ${await response.text()}`);
+    }
     return true;
   }
 }

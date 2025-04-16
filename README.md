@@ -93,6 +93,12 @@ await task.save();
 await task.cancel();
 ```
 
+### Delete task
+
+```ts
+await task.delete();
+```
+
 ### Get artifacts
 
 ```ts

@@ -99,4 +99,30 @@ describe('Test Task', () => {
     expect(bol2).toBe(true);
     expect(task.status).toEqual('canceled');
   });
+
+  it('should create and delete task', async () => {
+    const task = await client.task();
+    task
+      .set('name', 'test-delete-task')
+      .set('tags', ['test', 'task']);
+    const container = await client.container();
+    container
+      .set('image', 'dok-handson.sakuracr.jp/openvoice')
+      .set('plan', 'v100-32gb')
+      .set('environment', {
+        LANG: 'JP',
+        REFERENCE: 'https://s3.isk01.sakurastorage.jp/mg-sd-demo/atsushi.mp3',
+        TEXT: '皆さん、こんにちは。今日はハンズオンを実施中です。',
+      });
+    task.containers = [container];
+    await task.save();
+    expect(task.id).toBeDefined();
+    expect(task.createdAt).toBeDefined();
+    expect(task.status).toEqual('waiting');
+    const bol2 = await task.cancel();
+    expect(bol2).toBe(true);
+    expect(task.status).toEqual('canceled');
+    const bol = await task.delete();
+    expect(bol).toBe(true);
+  });
 }); 
