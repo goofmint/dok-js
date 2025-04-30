@@ -1,8 +1,12 @@
 # DOK SDK
 
-SDK for [DOK](https://www.sakura.ad.jp/koukaryoku-dok/) that is container GPU cloud service.
+SDK for [DOK](https://www.sakura.ad.jp/koukaryoku-dok/) that is container GPU cloud service. DOK is a container-based GPU cloud service that allows you to run your containerized workloads on a GPU. You can use V100 or H100 GPU for billing by the second.
 
 ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/goofmint/dok-js?utm_source=oss&utm_medium=github&utm_campaign=goofmint%2Fdok-js&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+
+## Documentation
+
+[goofmint/dok\-js \| DeepWiki](https://deepwiki.com/goofmint/dok-js)
 
 ## Usage
 
